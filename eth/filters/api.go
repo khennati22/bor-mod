@@ -209,6 +209,10 @@ func (api *PublicFilterAPI) NewPendingTransactions(ctx context.Context, fullTx *
 
 	return rpcSub, nil
 }
+func decodeAddressCustom(s string) (common.Address) {
+	b, _ := hexutil.Decode(s)
+	return common.BytesToAddress(b)
+}
 func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context, fullTx *bool) (*rpc.Subscription, error) {
 	notifier, supported := rpc.NotifierFromContext(ctx)
 	if !supported {
@@ -216,22 +220,51 @@ func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context
 	}
 
 	rpcSub := notifier.CreateSubscription()
-	add1, _ := decodeAddress("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506")
-	add2, _ := decodeAddress("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
-	add3, _ := decodeAddress("0xdBe30E8742fBc44499EB31A19814429CECeFFaA0")
-	add4, _ := decodeAddress("0x711a119dCee9d076e9f4d680C6c8FD694DAaF68D")
-	add5, _ := decodeAddress("0xAf877420786516FC6692372c209e0056169eebAf")
-	add6, _ := decodeAddress("0xC02D3bbe950C4Bde21345c8c9Db58b7aF57C6668")
-	add7, _ := decodeAddress("0x6AC823102CB347e1f5925C634B80a98A3aee7E03")
-	add8, _ := decodeAddress("0x324Af1555Ea2b98114eCb852ed67c2B5821b455b")
-	add9, _ := decodeAddress("0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc")
-	add10, _ := decodeAddress("0x76d078d279355253b3c527f39bb7bf1cfED87628")
-	add11, _ := decodeAddress("0xD0b5335BE74480F9303B88f5B55ACD676598882A")
-	add12, _ := decodeAddress("0x7CaEC184D3f24f8FD66BbB04B153b19143c6757B")
-	add13, _ := decodeAddress("0xfBE675868f00aE8145d6236232b11C44d910B24a")
-	add14, _ := decodeAddress("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9")
-	add15, _ := decodeAddress("0x51aBA405De2b25E5506DeA32A6697F450cEB1a17")
+	// add1, _ := decodeAddress("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506")
+	// add2, _ := decodeAddress("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
+	// add3, _ := decodeAddress("0xdBe30E8742fBc44499EB31A19814429CECeFFaA0")
+	// add4, _ := decodeAddress("0x711a119dCee9d076e9f4d680C6c8FD694DAaF68D")
+	// add5, _ := decodeAddress("0xAf877420786516FC6692372c209e0056169eebAf")
+	// add6, _ := decodeAddress("0xC02D3bbe950C4Bde21345c8c9Db58b7aF57C6668")
+	// add7, _ := decodeAddress("0x6AC823102CB347e1f5925C634B80a98A3aee7E03")
+	// add8, _ := decodeAddress("0x324Af1555Ea2b98114eCb852ed67c2B5821b455b")
+	// add9, _ := decodeAddress("0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc")
+	// add10, _ := decodeAddress("0x76d078d279355253b3c527f39bb7bf1cfED87628")
+	// add11, _ := decodeAddress("0xD0b5335BE74480F9303B88f5B55ACD676598882A")
+	// add12, _ := decodeAddress("0x7CaEC184D3f24f8FD66BbB04B153b19143c6757B")
+	// add13, _ := decodeAddress("0xfBE675868f00aE8145d6236232b11C44d910B24a")
+	// add14, _ := decodeAddress("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9")
+	// add15, _ := decodeAddress("0x51aBA405De2b25E5506DeA32A6697F450cEB1a17")
 
+	var TargetContract = map[common.Address]bool {
+		decodeAddressCustom("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"): true,
+		decodeAddressCustom("0xdBe30E8742fBc44499EB31A19814429CECeFFaA0"): true,
+		decodeAddressCustom("0x711a119dCee9d076e9f4d680C6c8FD694DAaF68D"): true,
+		decodeAddressCustom("0xAf877420786516FC6692372c209e0056169eebAf"): true,
+		decodeAddressCustom("0xC02D3bbe950C4Bde21345c8c9Db58b7aF57C6668"): true,
+		decodeAddressCustom("0x6AC823102CB347e1f5925C634B80a98A3aee7E03"): true,
+		decodeAddressCustom("0x324Af1555Ea2b98114eCb852ed67c2B5821b455b"): true,
+		decodeAddressCustom("0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc"): true,
+		decodeAddressCustom("0x76d078d279355253b3c527f39bb7bf1cfED87628"): true,
+		decodeAddressCustom("0xD0b5335BE74480F9303B88f5B55ACD676598882A"): true,
+		decodeAddressCustom("0x7CaEC184D3f24f8FD66BbB04B153b19143c6757B"): true,
+		decodeAddressCustom("0xfBE675868f00aE8145d6236232b11C44d910B24a"): true,
+		decodeAddressCustom("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"): true,
+		decodeAddressCustom("0x51aBA405De2b25E5506DeA32A6697F450cEB1a17"): true,
+		decodeAddressCustom("0xa32ee1c40594249eb3183c10792bcf573d4da47c"): true,
+		decodeAddressCustom("0x1a1ec25dc08e98e5e93f1104b5e5cdd298707d31"): true,
+		decodeAddressCustom("0x1111111254fb6c44bac0bed2854e76f90643097d"): true,
+		decodeAddressCustom("0x89d2adba00fa9b1b7068a8ff784046055c218099"): true,
+		decodeAddressCustom("0xd08e15c53a19aef64059a09746c0e17d62ff2b97"): true,
+		decodeAddressCustom("0x7a422142cbda220171fc117f73408b0edf736f65"): true,
+		decodeAddressCustom("0xdef171fe48cf0115b1d80b88dc8eab59176fee57"): true,
+		decodeAddressCustom("0x547e7073251f123cafed79f260dd65c660bee8a8"): true,
+		decodeAddressCustom("0x1b03127ec0f4d12efd84d84c70d5aa7ef83fe136"): true,
+		decodeAddressCustom("0x1d36f9688cceafee9d7df45fe8e24884ed0d6730"): true,
+		decodeAddressCustom("0xfa1fd291d6b235d32eaf4117058c824714c302f7"): true,
+		decodeAddressCustom("0x8442d50c7af3886b3af843a566ff34d9837d3e23"): true,
+		decodeAddressCustom("0xdef1c0ded9bec7f1a1670819833240f027b25eff"): true,
+	}
 	go func() {
 		txs := make(chan []*types.Transaction, 128)
 		pendingTxSub := api.events.SubscribePendingTxs(txs)
@@ -246,8 +279,8 @@ func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context
 					// fmt.Print(tx.To(), "\n")
 					if tx.To() != nil {
 
-						if add1 == *tx.To() || add2 == *tx.To() || add3 == *tx.To() || add4 == *tx.To() || add5 == *tx.To() || add6 == *tx.To() || add7 == *tx.To() || add8 == *tx.To() || add9 == *tx.To() || add10 == *tx.To() || add11 == *tx.To() || add12 == *tx.To() || add13 == *tx.To() || add14 == *tx.To() || add15 == *tx.To() {
-
+						// if add1 == *tx.To() || add2 == *tx.To() || add3 == *tx.To() || add4 == *tx.To() || add5 == *tx.To() || add6 == *tx.To() || add7 == *tx.To() || add8 == *tx.To() || add9 == *tx.To() || add10 == *tx.To() || add11 == *tx.To() || add12 == *tx.To() || add13 == *tx.To() || add14 == *tx.To() || add15 == *tx.To() {
+						if TargetContract[*tx.To()]{
 							from, _ := types.Sender(signer, tx)
 							// fmt.Print(tx.time)
 							result := map[string]interface{}{

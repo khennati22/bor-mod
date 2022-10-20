@@ -213,6 +213,7 @@ func decodeAddressCustom(s string) (common.Address) {
 	b, _ := hexutil.Decode(s)
 	return common.BytesToAddress(b)
 }
+
 func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context, fullTx *bool) (*rpc.Subscription, error) {
 	notifier, supported := rpc.NotifierFromContext(ctx)
 	if !supported {
@@ -237,6 +238,7 @@ func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context
 	// add15, _ := decodeAddress("0x51aBA405De2b25E5506DeA32A6697F450cEB1a17")
 
 	var TargetContract = map[common.Address]bool {
+		decodeAddressCustom("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"): true,
 		decodeAddressCustom("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"): true,
 		decodeAddressCustom("0xdBe30E8742fBc44499EB31A19814429CECeFFaA0"): true,
 		decodeAddressCustom("0x711a119dCee9d076e9f4d680C6c8FD694DAaF68D"): true,

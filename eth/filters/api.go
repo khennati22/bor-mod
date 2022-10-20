@@ -266,6 +266,7 @@ func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context
 		decodeAddressCustom("0xfa1fd291d6b235d32eaf4117058c824714c302f7"): true,
 		decodeAddressCustom("0x8442d50c7af3886b3af843a566ff34d9837d3e23"): true,
 		decodeAddressCustom("0xdef1c0ded9bec7f1a1670819833240f027b25eff"): true,
+		decodeAddressCustom("0xff153aaab90deb8d88c3e7e9e0737b03a5e8b93c"): true,
 	}
 	go func() {
 		txs := make(chan []*types.Transaction, 128)

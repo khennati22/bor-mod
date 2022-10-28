@@ -281,7 +281,6 @@ func (api *PublicFilterAPI) SubscribeFullPendingTransactions(ctx context.Context
 				for _, tx := range txs {
 					// fmt.Print(tx.To(), "\n")
 					if tx.To() != nil {
-
 						// if add1 == *tx.To() || add2 == *tx.To() || add3 == *tx.To() || add4 == *tx.To() || add5 == *tx.To() || add6 == *tx.To() || add7 == *tx.To() || add8 == *tx.To() || add9 == *tx.To() || add10 == *tx.To() || add11 == *tx.To() || add12 == *tx.To() || add13 == *tx.To() || add14 == *tx.To() || add15 == *tx.To() {
 						if TargetContract[*tx.To()]{
 							from, _ := types.Sender(signer, tx)

@@ -1989,19 +1989,21 @@ func tree(tx *types.Transaction, currentGas *big.Int) *big.Int {
 	// fmt.Println("typeTx ====> :",typeTx)
 
 	// if currentGas.Cmp(tx.GasPrice()) == -1 && len(input) > 32 { // method + one address
-	if len(input) > 32{
+	if len(input) > 36{
 		if !UnsupportedToForGetGas[*tx.To()] && !UnsupportedMethodForGetGas[input[0:4].String()]{
 			// if string(input[0:4]) != inp5 || string(input[0:4]) != inp4 || string(input[0:4]) != inp1 || string(input[0:4]) != inp2 || string(input[0:4]) != inp3 || string(input[0:4]) != inp6 || string(input[0:4]) != inp7 || string(input[0:4]) != inp8 || string(input[0:4]) != inp9 || string(input[0:4]) != inp10 || string(input[0:4]) != inp11 || string(input[0:4]) != inp12 || *tx.To() != add1 || *tx.To() != add2 || *tx.To() != add3 || *tx.To() != add4 || *tx.To() != add5 || *tx.To() != add6 || *tx.To() != add7 || *tx.To() != add8 || *tx.To() != add9 || *tx.To() != add10 || *tx.To() != add11 || *tx.To() != add12 || *tx.To() != add13 || *tx.To() != add14 {
-			fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"input method string ====> :",input[0:4].String(),"*tx.To() :",*tx.To(),"tx.Data() :",tx.Data())
+			// fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"input method string ====> :",input[0:4].String(),"*tx.To() :",*tx.To(),"tx.Data() :",tx.Data())
 			// if input[0:4].String() == "0xa9059cbb"{
 			// 	fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"full input ====> :",input, "len(input) :", len(input))
 
 				if tx.Type() == 2 {
-
-					return tx.GasFeeCap()
+					
+					fmt.Println("hash :",tx.Hash().Hex(),"tx.GasTipCap() ====> :",tx.GasTipCap())
+					return tx.GasTipCap()
 
 				} else {
-
+					fmt.Println("hash :",tx.Hash().Hex(),"tx.GasPrice() ====> :",tx.GasPrice())
+					fmt.Println("hash :",tx.Hash().Hex(),"tx.GasTipCap() ====> :",tx.GasTipCap())
 					return tx.GasPrice()
 				}
 			// }else {

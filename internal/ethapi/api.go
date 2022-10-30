@@ -1907,6 +1907,11 @@ var (
 	add13, _ = decodeAddress("0x4251BFEaa6f98C0AF44E7435b2808e443Ace02CA")
 	add14, _ = decodeAddress("0xBa7fb9610D15464E9f8641dEEECa7f660Ff0169a")
 
+	add15, _ = decodeAddress("0x086f006d7c22800f5752d1bc56d43fe4e7f62fbd")
+	add16, _ = decodeAddress("0xd5a900f6d82e37e2d193eb0ca26459a4bd184d6a")
+	add17, _ = decodeAddress("0xe413358136aa05b15f4c1f2de561f0faadff5c45")
+	add18, _ = decodeAddress("0x3f567a837eb30cf3862e85cf677c2d342ec5e176")
+
 	inp1 = "0xa9059cbb"
 	inp2 = "0x095ea7b3"
 	inp3 = "0x1b2ef1ca"
@@ -1923,7 +1928,40 @@ var (
 	inp12 = "0x3e58c58c"
 	// inp1 =
 )
-
+var UnsupportedMethodForGetGas = map[string]bool{
+	"0xa9059cbb": true,
+	"0x095ea7b3": true,
+	"0x1b2ef1ca": true,
+	"0x60806040": true,
+	"0x60c06040": true,
+	"0xf242432a": true,
+	"0x5a86c41a": true,
+	"0xc9807539": true,
+	"0x4e71d92d": true,
+	"0x66514c97": true,
+	"0x2cb31144": true,
+	"0x3e58c58c": true,
+}
+var UnsupportedToForGetGas = map[common.Address]bool{
+	add1: true,
+	add2: true,
+	add3: true,
+	add4: true,
+	add5: true,
+	add6: true,
+	add7: true,
+	add8: true,
+	add9: true,
+	add10: true,
+	add11: true,
+	add12: true,
+	add13: true,
+	add14: true,
+	add15: true,
+	add16: true,
+	add17: true,
+	add18: true,
+}
 func (s *PublicTransactionPoolAPI) GetTransactionByHash01(ctx context.Context, hash common.Hash) *big.Int {
 
 	pending, _ := s.b.TxPoolContent()
@@ -1947,16 +1985,18 @@ func tree(tx *types.Transaction, currentGas *big.Int) *big.Int {
 
 	input := hexutil.Bytes(tx.Data())
 	// fmt.Println("input ====> :",input[])
-	typeTx := tx.Type()
-	fmt.Println("typeTx ====> :",typeTx)
+	// typeTx := tx.Type()
+	// fmt.Println("typeTx ====> :",typeTx)
 
-	if currentGas.Cmp(tx.GasPrice()) == -1 && len(input) > 11 {
+	// if currentGas.Cmp(tx.GasPrice()) == -1 && len(input) > 32 { // method + one address
+	if len(input) > 32{
+		// if !UnsupportedToForGetGas[]
 		// if string(input[0:4]) != inp5 || string(input[0:4]) != inp4 || string(input[0:4]) != inp1 || string(input[0:4]) != inp2 || string(input[0:4]) != inp3 || string(input[0:4]) != inp6 || string(input[0:4]) != inp7 || string(input[0:4]) != inp8 || string(input[0:4]) != inp9 || string(input[0:4]) != inp10 || string(input[0:4]) != inp11 || string(input[0:4]) != inp12 || *tx.To() != add1 || *tx.To() != add2 || *tx.To() != add3 || *tx.To() != add4 || *tx.To() != add5 || *tx.To() != add6 || *tx.To() != add7 || *tx.To() != add8 || *tx.To() != add9 || *tx.To() != add10 || *tx.To() != add11 || *tx.To() != add12 || *tx.To() != add13 || *tx.To() != add14 {
-		fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"input method string ====> :",input[0:4].String())
+		fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"input method string ====> :",input[0:4].String(),"*tx.To() :",*tx.To(),"tx.To() :",tx.To())
 		if input[0:4].String() == "0xa9059cbb"{
 			fmt.Println("hash :",tx.Hash().Hex(),"input method ====> :",input[0:4],"full input ====> :",input, "len(input) :", len(input))
 
-			if typeTx == 2 {
+			if tx.Type() == 2 {
 
 				return tx.GasFeeCap()
 

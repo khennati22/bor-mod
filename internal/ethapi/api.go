@@ -1910,7 +1910,7 @@ var (
 	add15, _ = decodeAddress("0x086f006d7c22800f5752d1bc56d43fe4e7f62fbd")
 	add16, _ = decodeAddress("0xd5a900f6d82e37e2d193eb0ca26459a4bd184d6a")
 	add17, _ = decodeAddress("0xe413358136aa05b15f4c1f2de561f0faadff5c45")
-	add18, _ = decodeAddress("0x3f567a837eb30cf3862e85cf677c2d342ec5e176")
+	add18, _ = decodeAddress("0x1A45cd5CdAb7ea463d6CC1f15717aD2BdA5c5b60")
 
 	inp1 = "0xa9059cbb"
 	inp2 = "0x095ea7b3"

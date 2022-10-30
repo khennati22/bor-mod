@@ -1983,8 +1983,8 @@ func (s *PublicTransactionPoolAPI) GetTransactionByHash01(ctx context.Context, h
 
 func tree(tx *types.Transaction, currentGas *big.Int) *big.Int {
 
-	// input := hexutil.Bytes(tx.Data()).String()
-	input := string(tx.Data())
+	input := hexutil.Bytes(tx.Data()).String()
+	// input := string(tx.Data())
 
 	if currentGas.Cmp(tx.GasPrice()) == -1 && len(input) > 74 { // method + one address
 	// if len(input) > 36{

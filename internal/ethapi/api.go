@@ -2002,8 +2002,8 @@ func tree(tx *types.Transaction, currentGas *big.Int) *big.Int {
 					return tx.GasTipCap()
 
 				} else {
-					fmt.Println("hash type 1 :",tx.Hash().Hex(),"tx.GasPrice() ====> :",tx.GasPrice())
-					fmt.Println("hash type 1 :",tx.Hash().Hex(),"tx.GasTipCap() ====> :",tx.GasTipCap())
+					fmt.Println("hash type 0 :",tx.Hash().Hex(),"tx.GasPrice() ====> :",tx.GasPrice())
+					fmt.Println("hash type 0 :",tx.Hash().Hex(),"tx.GasTipCap() ====> :",tx.GasTipCap())
 					return tx.GasPrice()
 				}
 			// }else {

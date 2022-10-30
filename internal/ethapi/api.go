@@ -1946,8 +1946,9 @@ func (s *PublicTransactionPoolAPI) GetTransactionByHash01(ctx context.Context, h
 func tree(tx *types.Transaction, currentGas *big.Int) *big.Int {
 
 	input := hexutil.Bytes(tx.Data())
-
+	fmt.Println("method ====> :",string(input[0:4]))
 	typeTx := tx.Type()
+	fmt.Println("typeTx ====> :",typeTx)
 
 	if currentGas.Cmp(tx.GasPrice()) == -1 && len(input) > 74 {
 

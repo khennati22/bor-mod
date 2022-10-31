@@ -2086,11 +2086,11 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			typeTx := tx.Type()
 
 			if typeTx == 2 {
-
+				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasFeeCap()
 
 			} else {
-
+				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasPrice()
 
 			}
@@ -2106,28 +2106,32 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			}
 
 			evm, gasGp, header, stateOrg = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-			fmt.Println(" the evm is: ", evm)
+			// fmt.Println(" the evm is: ", evm)
 			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
 			if len(results.Revert()) > 0 {
 				typeTx := tx.Type()
 				if typeTx == 2 {
+					fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 					return tx.GasFeeCap()
 				} else {
+					fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 					return tx.GasPrice()
 				}
 			}
-			fmt.Println(" the modified version evm is: ", evm)
+			// fmt.Println(" the modified version evm is: ", evm)
 			evm.Reset(evm.TxContext, stateOrg)
-			fmt.Println(" the reset version evm is: ", evm)
+			// fmt.Println(" the reset version evm is: ", evm)
 		}
 
 		results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
 		if results == 1 {
 			typeTx := tx.Type()
 			if typeTx == 2 {
+				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasFeeCap()
 			} else {
+				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasPrice()
 			}
 		}

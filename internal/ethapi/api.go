@@ -2109,6 +2109,9 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			// fmt.Println(" the evm is: ", evm)
 			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
+			
+			fmt.Println("===============================results.Revert()==============================",results.Revert(), "=============================results.Revert()================================")
+			fmt.Println("===============================len results.Revert()==============================",len(results.Revert()), "=============================len results.Revert()================================")
 			if len(results.Revert()) > 0 {
 				typeTx := tx.Type()
 				if typeTx == 2 {

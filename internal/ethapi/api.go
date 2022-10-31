@@ -2129,6 +2129,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 		results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
 		if results == 1 {
+			fmt.Println("================ in results == 1 ===>")
 			typeTx := tx.Type()
 			if typeTx == 2 {
 				fmt.Println("=============================================================",tx.Hash(), "=============================================================")

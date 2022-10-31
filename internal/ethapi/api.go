@@ -2068,33 +2068,20 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 
 	}
-	var (
-		evm      *vm.EVM
-		gasGp    *core.GasPool
-		header   *types.Header
+	// var (
+	// 	evm      *vm.EVM
+	// 	gasGp    *core.GasPool
+	// 	header   *types.Header
 	// 	// stateOrg *state.StateDB
 	// 	// principalMsg types.Message
 	// 	// results *core.ExecutionResult
 
-	)
+	// )
 	txs := block.Transactions()
 
 	for idx, tx := range txs {
 		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
-		if idx == 0 {
-			txN := formatTx(tx)
-			callArgs := TransactionArgs{
-				From:  &txN.From,
-				To:    txN.To,
-				Value: txN.Value,
-				// Data:  &txN.Input,
-			}
-			evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-		}
-
-		evmTemp := *evm
-
-
+		
 		if idx == len(txs)-1 {
 
 			typeTx := tx.Type()
@@ -2111,18 +2098,18 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			if len(input) > 74 {
 				if !UnsupportedToForGetGas[*tx.To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 
-					// txN := formatTx(tx)
-					// callArgs := TransactionArgs{
-					// 	From:  &txN.From,
-					// 	To:    txN.To,
-					// 	Value: txN.Value,
-					// 	// Data:  &txN.Input,
-					// }
+					txN := formatTx(tx)
+					callArgs := TransactionArgs{
+						From:  &txN.From,
+						To:    txN.To,
+						Value: txN.Value,
+						// Data:  &txN.Input,
+					}
 
-					// evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+					evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
 					// fmt.Println(" the evm is: ", evm)
 					principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-					results, _ := core.ApplyMessage(&evmTemp, principalMsg, gasGp)
+					results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
 					
 					fmt.Println("================results.Revert()=======>",results.Revert())
 					fmt.Println("================len results.Revert()===>",len(results.Revert()))

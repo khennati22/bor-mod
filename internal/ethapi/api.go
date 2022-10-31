@@ -2081,7 +2081,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 	for idx, tx := range txs {
 
-		if idx > 10 {
+		if idx == len(txs)-1 {
 
 			typeTx := tx.Type()
 

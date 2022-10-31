@@ -2059,6 +2059,93 @@ func tree02FromPending(tx *RPCTransaction) int {
 
 }
 
+func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
+
+	block, _ := s.b.BlockByNumber(ctx, number)
+
+	formatTx := func(tx *types.Transaction) *RPCTransaction {
+
+		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
+
+	}
+	// var (
+	// 	evm      *vm.EVM
+	// 	gasGp    *core.GasPool
+	// 	header   *types.Header
+	// 	// stateOrg *state.StateDB
+	// 	// principalMsg types.Message
+	// 	// results *core.ExecutionResult
+
+	// )
+	txs := block.Transactions()
+
+	for idx, tx := range txs {
+		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
+		
+		if idx == len(txs)-1 {
+
+			typeTx := tx.Type()
+			fmt.Println("==================>",tx.Hash())
+			if typeTx == 2 {
+				return tx.GasFeeCap()
+
+			} else {
+				return tx.GasPrice()
+
+			}
+		}else{
+			txN := formatTx(tx)
+			callArgs := TransactionArgs{
+				From:  &txN.From,
+				To:    txN.To,
+				Value: txN.Value,
+				// Data:  &txN.Input,
+			}
+
+			evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+			// fmt.Println(" the evm is: ", evm)
+			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
+			
+			fmt.Println("================results.Revert()=======>",results.Revert())
+			fmt.Println("================len results.Revert()===>",len(results.Revert()))
+			if len(results.Revert()) > 0 {
+				fmt.Println("================len(results.Revert()) > 0 ===>")
+				typeTx := tx.Type()
+				fmt.Println("==================>",tx.Hash())
+				if typeTx == 2 {
+					return tx.GasTipCap()
+					// return tx.GasFeeCap()
+				} else {
+					return tx.GasPrice()
+				}
+			}
+			// fmt.Println(" the modified version evm is: ", evm)
+			// evm.Reset(evm.TxContext, stateOrg)
+			// fmt.Println(" the reset version evm is: ", evm)
+		}
+
+		// results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
+		// if results == 1 {
+		// 	fmt.Println("================ in results == 1 ===>")
+		// 	typeTx := tx.Type()
+		// 	fmt.Println("============================= Valid Tx : ====> ",tx.Hash())
+		// 	if typeTx == 2 {
+		// 		return tx.GasFeeCap()
+		// 	} else {
+		// 		return tx.GasPrice()
+		// 	}
+		// }
+		// evm.Reset(evm.TxContext, stateOrg)
+	}
+
+	return 0
+
+}
+
+
+
+
 // func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
 
 // 	block, _ := s.b.BlockByNumber(ctx, number)
@@ -2068,20 +2155,19 @@ func tree02FromPending(tx *RPCTransaction) int {
 // 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 
 // 	}
-// 	// var (
-// 	// 	evm      *vm.EVM
-// 	// 	gasGp    *core.GasPool
-// 	// 	header   *types.Header
-// 	// 	// stateOrg *state.StateDB
-// 	// 	// principalMsg types.Message
-// 	// 	// results *core.ExecutionResult
+// 	var (
+// 		evm      *vm.EVM
+// 		gasGp    *core.GasPool
+// 		header   *types.Header
+// 		stateOrg *state.StateDB
+// 		// principalMsg types.Message
+// 		// results *core.ExecutionResult
 
-// 	// )
+// 	)
 // 	txs := block.Transactions()
 
 // 	for idx, tx := range txs {
 // 		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
-		
 // 		if idx == len(txs)-1 {
 
 // 			typeTx := tx.Type()
@@ -2093,18 +2179,20 @@ func tree02FromPending(tx *RPCTransaction) int {
 // 				return tx.GasPrice()
 
 // 			}
-// 		}else{
+// 		}
+
+// 		if idx == 0 {
 // 			txN := formatTx(tx)
 // 			callArgs := TransactionArgs{
 // 				From:  &txN.From,
 // 				To:    txN.To,
-// 				Value: txN.Value,
+// 				// Value: txN.Value,
 // 				// Data:  &txN.Input,
 // 			}
 
-// 			evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+// 			evm, gasGp, header, stateOrg = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
 // 			// fmt.Println(" the evm is: ", evm)
-// 			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+// 			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 // 			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
 			
 // 			fmt.Println("================results.Revert()=======>",results.Revert())
@@ -2120,114 +2208,27 @@ func tree02FromPending(tx *RPCTransaction) int {
 // 				}
 // 			}
 // 			// fmt.Println(" the modified version evm is: ", evm)
-// 			// evm.Reset(evm.TxContext, stateOrg)
+// 			evm.Reset(evm.TxContext, stateOrg)
 // 			// fmt.Println(" the reset version evm is: ", evm)
 // 		}
 
-// 		// results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
-// 		// if results == 1 {
-// 		// 	fmt.Println("================ in results == 1 ===>")
-// 		// 	typeTx := tx.Type()
-// 		// 	fmt.Println("============================= Valid Tx : ====> ",tx.Hash())
-// 		// 	if typeTx == 2 {
-// 		// 		return tx.GasFeeCap()
-// 		// 	} else {
-// 		// 		return tx.GasPrice()
-// 		// 	}
-// 		// }
-// 		// evm.Reset(evm.TxContext, stateOrg)
+// 		results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
+// 		if results == 1 {
+// 			fmt.Println("================ in results == 1 ===>")
+// 			typeTx := tx.Type()
+// 			fmt.Println("============================= Valid Tx : ====> ",tx.Hash())
+// 			if typeTx == 2 {
+// 				return tx.GasFeeCap()
+// 			} else {
+// 				return tx.GasPrice()
+// 			}
+// 		}
+// 		evm.Reset(evm.TxContext, stateOrg)
 // 	}
 
 // 	return 0
 
 // }
-
-
-
-
-func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
-
-	block, _ := s.b.BlockByNumber(ctx, number)
-
-	formatTx := func(tx *types.Transaction) *RPCTransaction {
-
-		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
-
-	}
-	var (
-		evm      *vm.EVM
-		gasGp    *core.GasPool
-		header   *types.Header
-		stateOrg *state.StateDB
-		// principalMsg types.Message
-		// results *core.ExecutionResult
-
-	)
-	txs := block.Transactions()
-
-	for idx, tx := range txs {
-		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
-		if idx == len(txs)-1 {
-
-			typeTx := tx.Type()
-			fmt.Println("==================>",tx.Hash())
-			if typeTx == 2 {
-				return tx.GasFeeCap()
-
-			} else {
-				return tx.GasPrice()
-
-			}
-		}
-
-		if idx == 0 {
-			txN := formatTx(tx)
-			callArgs := TransactionArgs{
-				From:  &txN.From,
-				To:    txN.To,
-				Value: txN.Value,
-				// Data:  &txN.Input,
-			}
-
-			evm, gasGp, header, stateOrg = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-			// fmt.Println(" the evm is: ", evm)
-			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
-			
-			fmt.Println("================results.Revert()=======>",results.Revert())
-			fmt.Println("================len results.Revert()===>",len(results.Revert()))
-			if len(results.Revert()) > 0 {
-				fmt.Println("================len(results.Revert()) > 0 ===>")
-				typeTx := tx.Type()
-				fmt.Println("==================>",tx.Hash())
-				if typeTx == 2 {
-					return tx.GasFeeCap()
-				} else {
-					return tx.GasPrice()
-				}
-			}
-			// fmt.Println(" the modified version evm is: ", evm)
-			evm.Reset(evm.TxContext, stateOrg)
-			// fmt.Println(" the reset version evm is: ", evm)
-		}
-
-		results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)
-		if results == 1 {
-			fmt.Println("================ in results == 1 ===>")
-			typeTx := tx.Type()
-			fmt.Println("============================= Valid Tx : ====> ",tx.Hash())
-			if typeTx == 2 {
-				return tx.GasFeeCap()
-			} else {
-				return tx.GasPrice()
-			}
-		}
-		evm.Reset(evm.TxContext, stateOrg)
-	}
-
-	return 0
-
-}
 
 func tree01(tx *types.Transaction, ctx context.Context, s Backend, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride, formatTx func(tx *types.Transaction) *RPCTransaction) int {
 

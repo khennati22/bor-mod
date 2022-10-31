@@ -2110,15 +2110,15 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
 			
-			fmt.Println("===============================results.Revert()==============================",results.Revert(), "=============================results.Revert()================================")
-			fmt.Println("===============================len results.Revert()==============================",len(results.Revert()), "=============================len results.Revert()================================")
+			fmt.Println("================results.Revert()=======>",results.Revert())
+			fmt.Println("================len results.Revert()===>",len(results.Revert()))
 			if len(results.Revert()) > 0 {
+				fmt.Println("================len(results.Revert()) > 0 ===>")
 				typeTx := tx.Type()
+				fmt.Println("==================>",tx.Hash())
 				if typeTx == 2 {
-					fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 					return tx.GasFeeCap()
 				} else {
-					fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 					return tx.GasPrice()
 				}
 			}

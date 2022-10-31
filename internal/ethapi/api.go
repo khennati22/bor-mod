@@ -2080,7 +2080,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	txs := block.Transactions()
 
 	for idx, tx := range txs {
-
+		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
 		if idx == len(txs)-1 {
 
 			typeTx := tx.Type()
@@ -2131,11 +2131,10 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		if results == 1 {
 			fmt.Println("================ in results == 1 ===>")
 			typeTx := tx.Type()
+			fmt.Println("============================= Valid Tx : ====> ",tx.Hash())
 			if typeTx == 2 {
-				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasFeeCap()
 			} else {
-				fmt.Println("=============================================================",tx.Hash(), "=============================================================")
 				return tx.GasPrice()
 			}
 		}
@@ -2206,10 +2205,12 @@ func tree01Duplicate(tx *types.Transaction, ctx context.Context, s Backend, args
 			principalMsg, _ := args.ToMessage(s.RPCGasCap(), header.BaseFee)
 			results, err := core.ApplyMessage(evm, principalMsg, gasGp)
 			if len(results.Revert()) > 0 {
+				fmt.Println("===================== this the result:",results)
+				fmt.Println("===================== this the results.Revert():",results.Revert())
 				return 1
 			}
 			elapsed = time.Since(start)
-			fmt.Printf("DoCallForTest tooks %s", elapsed)
+			fmt.Printf("DoCallForTest ===================== tooks %s", elapsed)
 
 			// }
 			if err != nil {
@@ -2217,6 +2218,8 @@ func tree01Duplicate(tx *types.Transaction, ctx context.Context, s Backend, args
 			}
 			// If the result contains a revert reason, try to unpack and return it.
 			if len(results.Revert()) > 0 {
+				fmt.Println("===================== this the result:",results)
+				fmt.Println("===================== this the results.Revert():",results.Revert())
 				return 1
 			}
 			return 0

@@ -2080,7 +2080,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	txs := block.Transactions()
 
 	for idx, tx := range txs {
-		fmt.Println("============================ tx id ===== >>  ",idx, "============================")
+		fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())
 		
 		if idx == len(txs)-1 {
 

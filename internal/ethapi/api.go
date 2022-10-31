@@ -2102,7 +2102,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 				From:  &txN.From,
 				To:    txN.To,
 				Value: txN.Value,
-				Data:  &txN.Input,
+				// Data:  &txN.Input,
 			}
 
 			evm, gasGp, header, stateOrg = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())

@@ -2094,35 +2094,41 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 			}
 		}else{
-			txN := formatTx(tx)
-			callArgs := TransactionArgs{
-				From:  &txN.From,
-				To:    txN.To,
-				Value: txN.Value,
-				// Data:  &txN.Input,
-			}
+			input := hexutil.Bytes(tx.Data()).String()
+			if len(input) > 74 {
+				if !UnsupportedToForGetGas[*tx.To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 
-			evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-			// fmt.Println(" the evm is: ", evm)
-			principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
-			
-			fmt.Println("================results.Revert()=======>",results.Revert())
-			fmt.Println("================len results.Revert()===>",len(results.Revert()))
-			if len(results.Revert()) > 0 {
-				fmt.Println("================len(results.Revert()) > 0 ===>")
-				typeTx := tx.Type()
-				fmt.Println("==================>",tx.Hash())
-				if typeTx == 2 {
-					return tx.GasTipCap()
-					// return tx.GasFeeCap()
-				} else {
-					return tx.GasPrice()
+					txN := formatTx(tx)
+					callArgs := TransactionArgs{
+						From:  &txN.From,
+						To:    txN.To,
+						Value: txN.Value,
+						// Data:  &txN.Input,
+					}
+
+					evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+					// fmt.Println(" the evm is: ", evm)
+					principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+					results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
+					
+					fmt.Println("================results.Revert()=======>",results.Revert())
+					fmt.Println("================len results.Revert()===>",len(results.Revert()))
+					if len(results.Revert()) > 0 {
+						fmt.Println("================len(results.Revert()) > 0 ===>")
+						typeTx := tx.Type()
+						fmt.Println("==================>",tx.Hash())
+						if typeTx == 2 {
+							return tx.GasTipCap()
+							// return tx.GasFeeCap()
+						} else {
+							return tx.GasPrice()
+						}
+					}
+					// fmt.Println(" the modified version evm is: ", evm)
+					// evm.Reset(evm.TxContext, stateOrg)
+					// fmt.Println(" the reset version evm is: ", evm)
 				}
 			}
-			// fmt.Println(" the modified version evm is: ", evm)
-			// evm.Reset(evm.TxContext, stateOrg)
-			// fmt.Println(" the reset version evm is: ", evm)
 		}
 
 		// results := tree01Duplicate(tx, ctx, s.b, args, blockNrOrHash, overrides, formatTx, evm, gasGp, header, stateOrg)

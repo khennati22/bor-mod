@@ -2061,7 +2061,7 @@ func tree02FromPending(tx *RPCTransaction) int {
 }
 
 
-func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) interface{} {
+func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) []byte {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
@@ -2124,8 +2124,10 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 	}
 	principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 	results, _ := core.ApplyMessage(evm, principalMsg, gasGp)
-
-	return results
+	if results.Revert() != nil{
+		return results.Revert()
+	}
+	return results.ReturnData
 
 
 	// var NextNextBlock []*types.Transaction

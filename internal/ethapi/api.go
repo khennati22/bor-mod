@@ -2084,14 +2084,14 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 	fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
-		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+		// if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
 			fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
 
 			txTemp = append(txTemp, tx)
 			if len(txTemp) == lastBlockLen{
 				break
 			}
-		}
+		// }
 	}
 
 	for i:= 0; i<len(txTemp); i++{

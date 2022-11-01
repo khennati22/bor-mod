@@ -2084,7 +2084,8 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 	// )
 	// tx2s := block.transactions
-	var txTem  [] *types.Transaction
+	var txTemp = make(map[*types.Transaction]bool)
+	var NextNextBlock []*types.Transaction
 	txs := block.Transactions()
 	// fmt.Println("=========================== txs =====================================>")
 	// fmt.Println(txs)
@@ -2092,16 +2093,34 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
-		if txTime > latestblockTime{
-			fmt.Println("tx Out ======>", tx.Hash(), "txTime:", txTime - latestblockTime)
-		}else{
-			fmt.Println("tx In ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
-			txTem = append(txTem, tx)
-			if len(txTem) == lastBlockLen{
+		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+			fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
+			txTemp[tx] = true
+			if len(txTemp) == lastBlockLen{
 				break
 			}
 		}
+	}
 
+	for _, tx := range txs {
+		txTime := tx.GetTxTime().UnixMilli()
+		
+		if !txTemp[tx]{
+			NextNextBlock = append(NextNextBlock, tx)
+			if txTime > latestblockTime{
+				// interested gas
+				// if tx.Type() == 2 {
+				// 	return tx.GasFeeCap()
+				// } else {
+				// 	return tx.GasPrice()
+				// }
+			}
+			if len(txTemp) == lastBlockLen{
+				fmt.Println("tx In pending + 1 ======>", tx.Hash(), "txTime:",  txTime - latestblockTime  )
+				break
+			}
+		}
+	}
 
 
 		// fmt.Println("=========================== *tx =====================================>")
@@ -2178,7 +2197,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		// 	}
 		// }
 		// evm.Reset(evm.TxContext, stateOrg)
-	}
+	// }
 
 	return 0
 

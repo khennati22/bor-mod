@@ -2107,6 +2107,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		
 		if !txTemp[tx]{
 			NextNextBlock = append(NextNextBlock, tx)
+			fmt.Println("tx In pending + 1 ======>", tx.Hash(), "txTime:",  txTime - latestblockTime  )
 			if txTime > latestblockTime{
 				// interested gas
 				// if tx.Type() == 2 {
@@ -2116,7 +2117,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 				// }
 			}
 			if len(txTemp) == lastBlockLen{
-				fmt.Println("tx In pending + 1 ======>", tx.Hash(), "txTime:",  txTime - latestblockTime  )
+				
 				break
 			}
 		}

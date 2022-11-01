@@ -2116,7 +2116,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 				// 	return tx.GasPrice()
 				// }
 			}
-			if len(txTemp) == lastBlockLen{
+			if len(NextNextBlock) == lastBlockLen{
 				
 				break
 			}

@@ -396,6 +396,13 @@ func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, e
 	return &Transaction{inner: cpy, time: tx.time}, nil
 }
 
+// get tx Time
+func (tx *Transaction) GetTxTime() (time.Time) {
+	
+	return tx.time
+}
+
+
 // Transactions implements DerivableList for transactions.
 type Transactions []*Transaction
 

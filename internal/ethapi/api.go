@@ -23,6 +23,7 @@ import (
 	"math/big"
 	"strings"
 	"time"
+	// "encoding/json"
 
 	// "reflect"
 
@@ -2085,14 +2086,17 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	txs := block.Transactions()
 	// fmt.Println("=========================== txs =====================================>")
 	// fmt.Println(txs)
-	blockTime := latestblock.ReceivedAt.UnixMilli() // block time
+	latestblockTime := latestblock.ReceivedAt // block time
 	for idx, tx := range txs {
 		fmt.Println("=========================== *tx =====================================>")
-		t := *tx
-		var tempTx interface{}
-		tempTx = t
-		fmt.Println("block Time:",blockTime,"tx:",tempTx)
-		
+		// t := *tx
+		txTime := tx.GetTxTime().UnixMilli()
+		fmt.Println("block Time:",latestblockTime.UnixMilli(),"txTime:",txTime, "hash :",tx.Hash())
+		// var txData interface{}
+		// err := json.Unmarshal([]byte(tempTx), &txData)
+		// if err != nil {
+		// 	fmt.Println("Unmarshal:",err)
+		// }
 		
 		
 		// fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())

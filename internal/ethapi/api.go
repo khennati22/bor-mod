@@ -2060,9 +2060,10 @@ func tree02FromPending(tx *RPCTransaction) int {
 }
 
 
-func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
+func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) interface{} {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
+	latestblock, _ := s.b.BlockByNumber(ctx, latest)
 
 	formatTx := func(tx *types.Transaction) *RPCTransaction {
 
@@ -2084,7 +2085,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	txs := block.Transactions()
 	// fmt.Println("=========================== txs =====================================>")
 	// fmt.Println(txs)
-	blockTime := block.ReceivedAt // block time
+	blockTime := latestblock.ReceivedAt // block time
 	for idx, tx := range txs {
 		fmt.Println("=========================== *tx =====================================>")
 		t := *tx

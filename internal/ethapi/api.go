@@ -2077,13 +2077,14 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	// 	// results *core.ExecutionResult
 
 	// )
+	// tx2s := block.transactions
 	txs := block.Transactions()
-	fmt.Println("=========================== txs =====================================>")
-	fmt.Println(txs)
+	// fmt.Println("=========================== txs =====================================>")
+	// fmt.Println(txs)
 	// txs := block.ReceivedAt // block time
 	for idx, tx := range txs {
-		// t := tt.t
-		// fmt.Println()
+		fmt.Println("=========================== *txs =====================================>")
+		fmt.Println(*tx)
 		// fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())
 		
 		if idx == len(txs)-1 {

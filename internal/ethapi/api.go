@@ -2065,7 +2065,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
-
+	latestblockNumber := latestblock.Number()
 	// formatTx := func(tx *types.Transaction) *RPCTransaction {
 
 	// 	return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
@@ -2087,6 +2087,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	// fmt.Println("=========================== txs =====================================>")
 	// fmt.Println(txs)
 	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
+	fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
 		if txTime > latestblockTime{

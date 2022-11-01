@@ -2065,7 +2065,7 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
-	lastBlockLen := len(latestblock.Transactions())
+	// lastBlockLen := len(latestblock.Transactions())
 	latestblockNumber := latestblock.Number()
 	formatTx := func(tx *types.Transaction) *RPCTransaction {
 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
@@ -2088,9 +2088,9 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 			fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
 
 			txTemp = append(txTemp, tx)
-			if len(txTemp) == lastBlockLen{
-				break
-			}
+			// if len(txTemp) == lastBlockLen{
+			// 	break
+			// }
 		// }
 	}
 

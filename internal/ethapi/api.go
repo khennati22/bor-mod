@@ -2242,6 +2242,43 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 }
 
 
+func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]common.Hash) {
+
+	block, _ := s.b.BlockByNumber(ctx, number)
+	latestblock, _ := s.b.BlockByNumber(ctx, latest)
+	lastBlockLen := len(latestblock.Transactions())
+	// latestblockNumber := latestblock.Number()
+	// formatTx := func(tx *types.Transaction) *RPCTransaction {
+	// 	return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
+	// }
+
+	// var (
+	// 	evm      *vm.EVM
+	// 	gasGp    *core.GasPool
+	// 	header   *types.Header
+	// )
+	
+	// var txTemp = make(map[*types.Transaction]bool)
+	var txHashList []common.Hash
+	// var txTemp []*types.Transaction
+	txs := block.Transactions()
+	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
+	// fmt.Println("latestblockNumber :", latestblockNumber)
+	for _, tx := range txs {
+		txTime := tx.GetTxTime().UnixMilli()
+		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+			txHash := tx.Hash()
+			txHashList = append(txHashList, txHash)
+			if len(txHashList) == lastBlockLen{
+				break
+			}
+		}
+	}
+	return txHashList
+
+
+}
+
 // func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
 
 // 	block, _ := s.b.BlockByNumber(ctx, number)

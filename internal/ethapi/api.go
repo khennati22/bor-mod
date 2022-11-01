@@ -2065,8 +2065,8 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
-	// lastBlockLen := len(latestblock.Transactions())
-	latestblockNumber := latestblock.Number()
+	lastBlockLen := len(latestblock.Transactions())
+	// latestblockNumber := latestblock.Number()
 	formatTx := func(tx *types.Transaction) *RPCTransaction {
 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 	}
@@ -2081,17 +2081,17 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 	var txTemp []*types.Transaction
 	txs := block.Transactions()
 	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
-	fmt.Println("latestblockNumber :", latestblockNumber)
+	// fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
-		// if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
-			fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
+		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+			// fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
 
 			txTemp = append(txTemp, tx)
-			// if len(txTemp) == lastBlockLen{
-			// 	break
-			// }
-		// }
+			if len(txTemp) == lastBlockLen{
+				break
+			}
+		}
 	}
 
 	for i:= 0; i<len(txTemp); i++{

@@ -2078,14 +2078,18 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 	// )
 	txs := block.Transactions()
-
+	fmt.Println("=========================== txs =====================================>")
+	fmt.Println(txs)
+	// txs := block.ReceivedAt // block time
 	for idx, tx := range txs {
-		fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())
+		// t := tt.t
+		// fmt.Println()
+		// fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())
 		
 		if idx == len(txs)-1 {
 
 			typeTx := tx.Type()
-			fmt.Println("==================>",tx.Hash())
+			// fmt.Println("==================>",tx.Hash())
 			if typeTx == 2 {
 				return tx.GasFeeCap()
 

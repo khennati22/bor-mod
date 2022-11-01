@@ -2059,6 +2059,7 @@ func tree02FromPending(tx *RPCTransaction) int {
 
 }
 
+
 func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, overrides *StateOverride) interface{} {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
@@ -2068,6 +2069,8 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 
 	}
+
+
 	// var (
 	// 	evm      *vm.EVM
 	// 	gasGp    *core.GasPool
@@ -2083,8 +2086,14 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	// fmt.Println(txs)
 	// txs := block.ReceivedAt // block time
 	for idx, tx := range txs {
-		fmt.Println("=========================== *txs =====================================>")
-		fmt.Println(*tx)
+		fmt.Println("=========================== *tx =====================================>")
+		t := *tx
+		var tempTx interface{}
+		tempTx = t
+		fmt.Println(tempTx)
+		
+		
+		
 		// fmt.Println(" tx id === >>  ",idx, "Hash === >> ",tx.Hash())
 		
 		if idx == len(txs)-1 {

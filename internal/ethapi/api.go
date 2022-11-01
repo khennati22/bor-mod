@@ -2084,13 +2084,13 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	txs := block.Transactions()
 	// fmt.Println("=========================== txs =====================================>")
 	// fmt.Println(txs)
-	// txs := block.ReceivedAt // block time
+	blockTime := block.ReceivedAt // block time
 	for idx, tx := range txs {
 		fmt.Println("=========================== *tx =====================================>")
 		t := *tx
 		var tempTx interface{}
 		tempTx = t
-		fmt.Println(tempTx)
+		fmt.Println("block Time:",blockTime,"tx:",tempTx)
 		
 		
 		

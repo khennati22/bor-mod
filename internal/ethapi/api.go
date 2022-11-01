@@ -2090,9 +2090,9 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
 		if txTime > latestblockTime{
-			fmt.Println("tx Out ======>", tx.Hash(), "txTime:",txTime )
+			fmt.Println("tx Out ======>", tx.Hash(), "txTime:", txTime - latestblockTime)
 		}else{
-			fmt.Println("tx In ======>", tx.Hash(), "txTime:",txTime )
+			fmt.Println("tx In ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
 		}
 
 

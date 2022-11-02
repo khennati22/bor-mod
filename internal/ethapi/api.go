@@ -2382,7 +2382,7 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 	var txHashList []common.Hash
 	// var txTemp []*types.Transaction
 	txs := block.Transactions()
-	latestblockTime := latestblock.ReceivedAt.UnixMilli() - 30 // block time
+	latestblockTime := latestblock.ReceivedAt.UnixMilli() - 20 // block time
 	fmt.Println("==============================> latestblockNumber: ",latestblockNumber, "latestblockTime :",latestblockTime,"pendingBlockBaseFee :",pendingBlockBaseFee)
 	// fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {

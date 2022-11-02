@@ -2240,8 +2240,8 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 	// }
 }
 type gasResult struct{
-	tip *big.Int
-	base *big.Int
+	tip string
+	base string
 	increase bool
 }
 
@@ -2328,8 +2328,8 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			}
 			if (callArgs.To == args.To) && (callArgs.From == args.From) {
 				// return big.NewInt(0) ,nil
-				gasResult.base = pendingBlockBaseFee
-				gasResult.tip = big.NewInt(0)
+				gasResult.base = pendingBlockBaseFee.String()
+				gasResult.tip = big.NewInt(0).String()
 				gasResult.increase = false
 				fmt.Println(" ============== > gas Result <============ :",gasResult)
 				return gasResult,nil
@@ -2346,16 +2346,16 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				typeTx := NextNextBlock[p].Type()
 				fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {
-					gasResult.base = pendingBlockBaseFee
-					gasResult.tip = NextNextBlock[p].GasTipCap()
+					gasResult.base = pendingBlockBaseFee.String()
+					gasResult.tip = NextNextBlock[p].GasTipCap().String()
 					gasResult.increase = true
 					fmt.Println(" ============== > gas Result <============ :",gasResult)
 					return gasResult,nil
 				} else {
 					tip := big.NewInt(0)
 					tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
-					gasResult.base = pendingBlockBaseFee
-					gasResult.tip = tip
+					gasResult.base = pendingBlockBaseFee.String()
+					gasResult.tip = tip.String()
 					gasResult.increase = true
 					fmt.Println(" ============== > gas Result <============ :",gasResult)
 					return gasResult,nil
@@ -2366,8 +2366,8 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	indx := (len(txTemp) / 3) * 2
 
 	if txTemp[indx].Type() == 2 {
-		gasResult.base = pendingBlockBaseFee
-		gasResult.tip = txTemp[indx].GasTipCap()
+		gasResult.base = pendingBlockBaseFee.String()
+		gasResult.tip = txTemp[indx].GasTipCap().String()
 		gasResult.increase = false
 		fmt.Println(" ============== > gas Result <============ :",gasResult)
 		return gasResult,nil
@@ -2376,8 +2376,8 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	} else {
 		tip := big.NewInt(0)
 		tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
-		gasResult.base = pendingBlockBaseFee
-		gasResult.tip = tip
+		gasResult.base = pendingBlockBaseFee.String()
+		gasResult.tip = tip.String()
 		gasResult.increase = false
 		fmt.Println(" ============== > gas Result <============ :",gasResult)
 		return gasResult,nil

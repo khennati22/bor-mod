@@ -2244,6 +2244,7 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
+	pendingBlockBaseFee := block.BaseFee()
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
 	lastBlockLen := len(latestblock.Transactions())
 	// latestblockNumber := latestblock.Number()
@@ -2338,7 +2339,9 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				if typeTx == 2 {
 					return NextNextBlock[p].GasTipCap() ,nil
 				} else {
-					return NextNextBlock[p].GasPrice(),nil
+					tip := big.NewInt(0)
+					tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
+					return tip,nil
 				}
 			}
 		}
@@ -2348,7 +2351,9 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	if txTemp[indx].Type() == 2 {
 		return txTemp[indx].GasTipCap() ,nil
 	} else {
-		return txTemp[indx].GasPrice() ,nil
+		tip := big.NewInt(0)
+		tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
+		return tip ,nil
 	}
 
 

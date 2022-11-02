@@ -2245,7 +2245,7 @@ type gasResult struct{
 	increase bool
 }
 
-func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (gasResult, error) {
+func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	pendingBlockBaseFee := block.BaseFee()
@@ -2285,7 +2285,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			break
 		}
 	}
-	var gasResult gasResult
+	// var gasResult gasResult
 	if len(NextNextBlock) > 0{
 		for p:= 0; p<len(NextNextBlock); p++{
 
@@ -2328,11 +2328,12 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			}
 			if (callArgs.To == args.To) && (callArgs.From == args.From) {
 				// return big.NewInt(0) ,nil
-				gasResult.base = pendingBlockBaseFee.String()
-				gasResult.tip = big.NewInt(0).String()
-				gasResult.increase = false
-				fmt.Println(" ============== > gas Result <============ :",gasResult)
-				return gasResult,nil
+				// gasResult.base = pendingBlockBaseFee.String()
+				// gasResult.tip = big.NewInt(0).String()
+				// gasResult.increase = false
+				// fmt.Println(" ============== > gas Result <============ :",gasResult)
+				// return gasResult,nil
+				return big.NewInt(0),nil
 			}
 				
 			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
@@ -2346,44 +2347,44 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				typeTx := NextNextBlock[p].Type()
 				fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {
-					gasResult.base = pendingBlockBaseFee.String()
-					gasResult.tip = NextNextBlock[p].GasTipCap().String()
-					gasResult.increase = true
-					fmt.Println(" ============== > gas Result <============ :",gasResult)
-					return gasResult,nil
+					// gasResult.base = pendingBlockBaseFee.String()
+					// gasResult.tip = NextNextBlock[p].GasTipCap().String()
+					// gasResult.increase = true
+					// fmt.Println(" ============== > gas Result <============ :",gasResult)
+					return NextNextBlock[p].GasTipCap(),nil
 				} else {
 					tip := big.NewInt(0)
 					tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
-					gasResult.base = pendingBlockBaseFee.String()
-					gasResult.tip = tip.String()
-					gasResult.increase = true
-					fmt.Println(" ============== > gas Result <============ :",gasResult)
-					return gasResult,nil
+					// gasResult.base = pendingBlockBaseFee.String()
+					// gasResult.tip = tip.String()
+					// gasResult.increase = true
+					// fmt.Println(" ============== > gas Result <============ :",gasResult)
+					return tip,nil
 				}
 			}
 		}
 	}
-	indx := (len(txTemp) / 3) * 2
+	return big.NewInt(0),nil
+	// indx := (len(txTemp) / 3) * 2
 
-	if txTemp[indx].Type() == 2 {
-		gasResult.base = pendingBlockBaseFee.String()
-		gasResult.tip = txTemp[indx].GasTipCap().String()
-		gasResult.increase = false
-		fmt.Println(" ============== > gas Result <============ :",gasResult)
-		return gasResult,nil
+	// if txTemp[indx].Type() == 2 {
+	// 	gasResult.base = pendingBlockBaseFee.String()
+	// 	gasResult.tip = txTemp[indx].GasTipCap().String()
+	// 	gasResult.increase = false
+	// 	fmt.Println(" ============== > gas Result <============ :",gasResult)
+	// 	return gasResult,nil
 
-		// return txTemp[indx].GasTipCap() ,nil
-	} else {
-		tip := big.NewInt(0)
-		tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
-		gasResult.base = pendingBlockBaseFee.String()
-		gasResult.tip = tip.String()
-		gasResult.increase = false
-		fmt.Println(" ============== > gas Result <============ :",gasResult)
-		return gasResult,nil
-	}
+	// 	// return txTemp[indx].GasTipCap() ,nil
+	// } else {
+	// 	tip := big.NewInt(0)
+	// 	tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
+	// 	gasResult.base = pendingBlockBaseFee.String()
+	// 	gasResult.tip = tip.String()
+	// 	gasResult.increase = false
+	// 	fmt.Println(" ============== > gas Result <============ :",gasResult)
+	// 	return gasResult,nil
+	// }
 }
-
 
 
 func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]common.Hash) {
@@ -2447,6 +2448,13 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 	return txHashList
 
 
+}
+
+func (s *PublicBlockChainAPI) NextBaseFee(ctx context.Context, number rpc.BlockNumber, overrides *StateOverride) (*big.Int) {
+
+	block, _ := s.b.BlockByNumber(ctx, number)
+	pendingBlockBaseFee := block.BaseFee()
+	return pendingBlockBaseFee
 }
 
 

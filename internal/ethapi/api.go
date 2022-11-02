@@ -2333,7 +2333,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				// gasResult.increase = false
 				// fmt.Println(" ============== > gas Result <============ :",gasResult)
 				// return gasResult,nil
-				return big.NewInt(0),nil
+				return big.NewInt(1),nil
 			}
 				
 			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)

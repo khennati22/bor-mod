@@ -2364,7 +2364,7 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
-	lastBlockLen := len(latestblock.Transactions())
+	// lastBlockLen := len(latestblock.Transactions())
 	latestblockNumber := latestblock.Number()
 	
 	pendingBlockBaseFee := block.BaseFee()
@@ -2388,11 +2388,34 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()
 		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
-			txHash := tx.Hash()
-			txHashList = append(txHashList, txHash)
-			if len(txHashList) == lastBlockLen{
-				break
+			if tx.Type() == 2 {
+				baseCompare := tx.GasFeeCap().Cmp(pendingBlockBaseFee)
+				tipCompare := tx.GasTipCap().Cmp(big.NewInt(30000000000))
+				if (baseCompare >= 0) && (tipCompare >= 0) {
+					txHashList = append(txHashList, tx.Hash())
+				}else{
+					fmt.Println("bad Tx 2 :",tx.Hash(),"latest-bn",latestblockNumber,"pending-BaseFee:",pendingBlockBaseFee,"Tx tips :",tx.GasTipCap())
+				}
+				
+			}else {
+				baseCompare := tx.GasPrice().Cmp(pendingBlockBaseFee)
+				if baseCompare == +1{
+					tip := big.NewInt(0)
+					tip.Sub(tx.GasPrice(), pendingBlockBaseFee)
+					if tip.Cmp(big.NewInt(30000000000)) >= 0 {
+						txHashList = append(txHashList, tx.Hash())
+					}else{
+						fmt.Println("bad Tx 0 :",tx.Hash(),"latest-bn",latestblockNumber,"pending-BaseFee:",pendingBlockBaseFee,"Tx tips calc :",tip,"txGas:",tx.GasPrice())
+					}
+				}else{
+					fmt.Println("bad Tx 0 :",tx.Hash(),"latest-bn",latestblockNumber,"pending-BaseFee:",pendingBlockBaseFee,"txGas:",tx.GasPrice())
+				}
 			}
+
+			
+			// if len(txHashList) == lastBlockLen{
+			// 	break
+			// }
 		}
 	}
 	return txHashList

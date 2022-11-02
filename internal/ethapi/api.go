@@ -2239,9 +2239,13 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 		// evm.Reset(evm.TxContext, stateOrg)
 	// }
 }
+type gasResult struct{
+	tip *big.Int
+	base *big.Int
+	increase bool
+}
 
-
-func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
+func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (gasResult, error) {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	pendingBlockBaseFee := block.BaseFee()
@@ -2281,7 +2285,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			break
 		}
 	}
-
+	var gasResult gasResult
 	if len(NextNextBlock) > 0{
 		for p:= 0; p<len(NextNextBlock); p++{
 
@@ -2323,7 +2327,11 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				Data:  &txN.Input,
 			}
 			if (callArgs.To == args.To) && (callArgs.From == args.From) {
-				return big.NewInt(0) ,nil
+				// return big.NewInt(0) ,nil
+				gasResult.base = pendingBlockBaseFee
+				gasResult.tip = big.NewInt(0)
+				gasResult.increase = false
+				return gasResult,nil
 			}
 				
 			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
@@ -2337,11 +2345,17 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				typeTx := NextNextBlock[p].Type()
 				fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {
-					return NextNextBlock[p].GasTipCap() ,nil
+					gasResult.base = pendingBlockBaseFee
+					gasResult.tip = NextNextBlock[p].GasTipCap()
+					gasResult.increase = true
+					return gasResult,nil
 				} else {
 					tip := big.NewInt(0)
 					tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
-					return tip,nil
+					gasResult.base = pendingBlockBaseFee
+					gasResult.tip = tip
+					gasResult.increase = true
+					return gasResult,nil
 				}
 			}
 		}
@@ -2349,15 +2363,22 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	indx := (len(txTemp) / 3) * 2
 
 	if txTemp[indx].Type() == 2 {
-		return txTemp[indx].GasTipCap() ,nil
+		gasResult.base = pendingBlockBaseFee
+		gasResult.tip = txTemp[indx].GasTipCap()
+		gasResult.increase = false
+		return gasResult,nil
+
+		// return txTemp[indx].GasTipCap() ,nil
 	} else {
 		tip := big.NewInt(0)
 		tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
-		return tip ,nil
+		gasResult.base = pendingBlockBaseFee
+		gasResult.tip = tip
+		gasResult.increase = false
+		return gasResult,nil
 	}
-
-
 }
+
 
 
 func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]common.Hash) {

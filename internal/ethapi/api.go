@@ -2331,6 +2331,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				gasResult.base = pendingBlockBaseFee
 				gasResult.tip = big.NewInt(0)
 				gasResult.increase = false
+				fmt.Println(" ============== > gas Result <============ :",gasResult)
 				return gasResult,nil
 			}
 				
@@ -2348,6 +2349,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 					gasResult.base = pendingBlockBaseFee
 					gasResult.tip = NextNextBlock[p].GasTipCap()
 					gasResult.increase = true
+					fmt.Println(" ============== > gas Result <============ :",gasResult)
 					return gasResult,nil
 				} else {
 					tip := big.NewInt(0)
@@ -2355,6 +2357,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 					gasResult.base = pendingBlockBaseFee
 					gasResult.tip = tip
 					gasResult.increase = true
+					fmt.Println(" ============== > gas Result <============ :",gasResult)
 					return gasResult,nil
 				}
 			}
@@ -2366,6 +2369,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 		gasResult.base = pendingBlockBaseFee
 		gasResult.tip = txTemp[indx].GasTipCap()
 		gasResult.increase = false
+		fmt.Println(" ============== > gas Result <============ :",gasResult)
 		return gasResult,nil
 
 		// return txTemp[indx].GasTipCap() ,nil
@@ -2375,6 +2379,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 		gasResult.base = pendingBlockBaseFee
 		gasResult.tip = tip
 		gasResult.increase = false
+		fmt.Println(" ============== > gas Result <============ :",gasResult)
 		return gasResult,nil
 	}
 }

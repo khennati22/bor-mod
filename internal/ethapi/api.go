@@ -2278,7 +2278,13 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 
 
 }
-func (s *PublicBlockChainAPI) BlockSimilateReturnTxHashaAndBlockTime(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]common.Hash,int64) {
+
+type BlockSimilateReturnTxHashaAndBlockTimeData struct{
+	hash []common.Hash
+	latestblockTime int64
+
+}
+func (s *PublicBlockChainAPI) BlockSimilateReturnTxHashaAndBlockTime(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (BlockSimilateReturnTxHashaAndBlockTimeData) {
 
 	block, _ := s.b.BlockByNumber(ctx, number)
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
@@ -2310,7 +2316,7 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHashaAndBlockTime(ctx context
 			}
 		}
 	}
-	return txHashList,latestblockTime
+	return BlockSimilateReturnTxHashaAndBlockTimeData{hash :txHashList,latestblockTime:latestblockTime}
 
 
 }

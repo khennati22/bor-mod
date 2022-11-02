@@ -2238,8 +2238,8 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 		// }
 		// evm.Reset(evm.TxContext, stateOrg)
 	// }
-
 }
+
 
 func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
 
@@ -2362,6 +2362,7 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 	lastBlockLen := len(latestblock.Transactions())
 	latestblockNumber := latestblock.Number()
 	
+	pendingBlockBaseFee := block.BaseFee()
 	// formatTx := func(tx *types.Transaction) *RPCTransaction {
 	// 	return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 	// }
@@ -2377,7 +2378,7 @@ func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blo
 	// var txTemp []*types.Transaction
 	txs := block.Transactions()
 	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
-	fmt.Println("==============================> latestblockNumber: ",latestblockNumber, "latestblockTime :",latestblockTime)
+	fmt.Println("==============================> latestblockNumber: ",latestblockNumber, "latestblockTime :",latestblockTime,"pendingBlockBaseFee :",pendingBlockBaseFee)
 	// fmt.Println("latestblockNumber :", latestblockNumber)
 	for _, tx := range txs {
 		txTime := tx.GetTxTime().UnixMilli()

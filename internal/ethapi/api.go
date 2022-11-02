@@ -2241,6 +2241,119 @@ func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args Transactio
 
 }
 
+func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
+
+	block, _ := s.b.BlockByNumber(ctx, number)
+	latestblock, _ := s.b.BlockByNumber(ctx, latest)
+	lastBlockLen := len(latestblock.Transactions())
+	// latestblockNumber := latestblock.Number()
+	formatTx := func(tx *types.Transaction) *RPCTransaction {
+		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
+	}
+
+	
+	
+	var txTemp []*types.Transaction
+	txs := block.Transactions()
+	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
+	for _, tx := range txs {
+		txTime := tx.GetTxTime().UnixMilli()
+		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+			// fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
+			txTemp = append(txTemp, tx)
+			if len(txTemp) == lastBlockLen{
+				break
+			}
+		}
+	}
+
+	var NextNextBlock []*types.Transaction
+	for _, tx := range txs {
+		txTime := tx.GetTxTime().UnixMilli()
+		
+		if txTime > latestblockTime{
+			NextNextBlock = append(NextNextBlock, tx)
+
+		}
+		if len(NextNextBlock) == lastBlockLen{
+			
+			break
+		}
+	}
+
+	if len(NextNextBlock) > 0{
+		for p:= 0; p<len(NextNextBlock); p++{
+
+			var evm      *vm.EVM
+			var gasGp    *core.GasPool
+			var header   *types.Header
+
+			for i:= 0; i<len(txTemp); i++{
+				if i == 0{
+					txN := formatTx(txTemp[i])
+					callArgs := TransactionArgs{
+						From:  &txN.From,
+						To:    txN.To,
+						Value: txN.Value,
+						Data:  &txN.Input,
+					}
+					evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+					core.ApplyMessage(evm, principalMsg, gasGp)
+		
+				}else{
+					txN := formatTx(txTemp[i])
+					callArgs := TransactionArgs{
+						From:  &txN.From,
+						To:    txN.To,
+						Value: txN.Value,
+						Data:  &txN.Input,
+					}
+					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+					core.ApplyMessage(evm, principalMsg, gasGp)
+				}
+			}
+
+			txN := formatTx(NextNextBlock[p])
+			callArgs := TransactionArgs{
+				From:  &txN.From,
+				To:    txN.To,
+				Value: txN.Value,
+				Data:  &txN.Input,
+			}
+			if (callArgs.To == args.To) && (callArgs.From == args.From) {
+				return big.NewInt(0) ,nil
+			}
+				
+			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			core.ApplyMessage(evm, principalMsg, gasGp)
+			
+
+			similateTx, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			results, _ := core.ApplyMessage(evm, similateTx, gasGp)
+			if len(results.Revert()) > 0 {
+				fmt.Println("================len(results.Revert()) > 0 ===>")
+				typeTx := NextNextBlock[p].Type()
+				fmt.Println("==================>",NextNextBlock[p].Hash())
+				if typeTx == 2 {
+					return NextNextBlock[p].GasTipCap() ,nil
+				} else {
+					return NextNextBlock[p].GasPrice(),nil
+				}
+			}
+		}
+	}
+	indx := (len(txTemp) / 3) * 2
+
+	if txTemp[indx].Type() == 2 {
+		return txTemp[indx].GasTipCap() ,nil
+	} else {
+		return txTemp[indx].GasPrice() ,nil
+	}
+
+
+}
+
 
 func (s *PublicBlockChainAPI) BlockSimilateReturnTxHash(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]common.Hash) {
 

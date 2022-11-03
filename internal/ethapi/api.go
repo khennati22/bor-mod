@@ -2286,80 +2286,125 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 		}
 	}
 	// var gasResult gasResult
+	do := true
 	if len(NextNextBlock) > 0{
+
 		for p:= 0; p<len(NextNextBlock); p++{
+			if (p == 0) && do {
+				p = p - 1
+				do = false
+				var evm      *vm.EVM
+				var gasGp    *core.GasPool
+				var header   *types.Header
 
-			var evm      *vm.EVM
-			var gasGp    *core.GasPool
-			var header   *types.Header
-
-			for i:= 0; i<len(txTemp); i++{
-				if i == 0{
-					txN := formatTx(txTemp[i])
-					callArgs := TransactionArgs{
-						From:  &txN.From,
-						To:    txN.To,
-						Value: txN.Value,
-						Data:  &txN.Input,
-					}
-					evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-					core.ApplyMessage(evm, principalMsg, gasGp)
-		
-				}else{
-					txN := formatTx(txTemp[i])
-					callArgs := TransactionArgs{
-						From:  &txN.From,
-						To:    txN.To,
-						Value: txN.Value,
-						Data:  &txN.Input,
-					}
-					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-					core.ApplyMessage(evm, principalMsg, gasGp)
-				}
-			}
-
-			txN := formatTx(NextNextBlock[p])
-			callArgs := TransactionArgs{
-				From:  &txN.From,
-				To:    txN.To,
-				Value: txN.Value,
-				Data:  &txN.Input,
-			}
-			if (callArgs.To == args.To) && (callArgs.From == args.From) {
-				// return big.NewInt(0) ,nil
-				// gasResult.base = pendingBlockBaseFee.String()
-				// gasResult.tip = big.NewInt(0).String()
-				// gasResult.increase = false
-				// fmt.Println(" ============== > gas Result <============ :",gasResult)
-				// return gasResult,nil
-				return big.NewInt(1),nil
-			}
-				
-			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			core.ApplyMessage(evm, principalMsg, gasGp)
+				for i:= 0; i<len(txTemp); i++{
+					if i == 0{
+						txN := formatTx(txTemp[i])
+						callArgs := TransactionArgs{
+							From:  &txN.From,
+							To:    txN.To,
+							Value: txN.Value,
+							Data:  &txN.Input,
+						}
+						evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+						principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+						core.ApplyMessage(evm, principalMsg, gasGp)
 			
+					}else{
+						txN := formatTx(txTemp[i])
+						callArgs := TransactionArgs{
+							From:  &txN.From,
+							To:    txN.To,
+							Value: txN.Value,
+							Data:  &txN.Input,
+						}
+						principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+						core.ApplyMessage(evm, principalMsg, gasGp)
+					}
+				}
 
-			similateTx, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			results, _ := core.ApplyMessage(evm, similateTx, gasGp)
-			if len(results.Revert()) > 0 {
-				fmt.Println("================len(results.Revert()) > 0 ===>")
-				typeTx := NextNextBlock[p].Type()
-				fmt.Println("==================>",NextNextBlock[p].Hash())
-				if typeTx == 2 {
+				principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+				results, err := core.ApplyMessage(evm, principalMsg, gasGp)
+				if err != nil{
+					return nil,err
+				}
+				if len(results.Revert()) > 0 {
+					return nil,newRevertError(results)
+				}
+			}else{
+
+				var evm      *vm.EVM
+				var gasGp    *core.GasPool
+				var header   *types.Header
+
+				for i:= 0; i<len(txTemp); i++{
+					if i == 0{
+						txN := formatTx(txTemp[i])
+						callArgs := TransactionArgs{
+							From:  &txN.From,
+							To:    txN.To,
+							Value: txN.Value,
+							Data:  &txN.Input,
+						}
+						evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+						principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+						core.ApplyMessage(evm, principalMsg, gasGp)
+			
+					}else{
+						txN := formatTx(txTemp[i])
+						callArgs := TransactionArgs{
+							From:  &txN.From,
+							To:    txN.To,
+							Value: txN.Value,
+							Data:  &txN.Input,
+						}
+						principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+						core.ApplyMessage(evm, principalMsg, gasGp)
+					}
+				}
+
+				txN := formatTx(NextNextBlock[p])
+				callArgs := TransactionArgs{
+					From:  &txN.From,
+					To:    txN.To,
+					Value: txN.Value,
+					Data:  &txN.Input,
+				}
+				if (callArgs.To == args.To) && (callArgs.From == args.From) {
+					// return big.NewInt(0) ,nil
 					// gasResult.base = pendingBlockBaseFee.String()
-					// gasResult.tip = NextNextBlock[p].GasTipCap().String()
-					// gasResult.increase = true
+					// gasResult.tip = big.NewInt(0).String()
+					// gasResult.increase = false
 					// fmt.Println(" ============== > gas Result <============ :",gasResult)
-					return NextNextBlock[p].GasTipCap(),nil
-				} else {
-					tip := big.NewInt(0)
-					tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
-					// gasResult.base = pendingBlockBaseFee.String()
-					// gasResult.tip = tip.String()
-					// gasResult.increase = true
-					// fmt.Println(" ============== > gas Result <============ :",gasResult)
-					return tip,nil
+					// return gasResult,nil
+					return big.NewInt(1),nil
+				}
+					
+				principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+				core.ApplyMessage(evm, principalMsg, gasGp)
+				
+
+				similateTx, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+				results, _ := core.ApplyMessage(evm, similateTx, gasGp)
+				if len(results.Revert()) > 0 {
+					fmt.Println("================len(results.Revert()) > 0 ===>")
+					typeTx := NextNextBlock[p].Type()
+					fmt.Println("==================>",NextNextBlock[p].Hash())
+					if typeTx == 2 {
+						// gasResult.base = pendingBlockBaseFee.String()
+						// gasResult.tip = NextNextBlock[p].GasTipCap().String()
+						// gasResult.increase = true
+						// fmt.Println(" ============== > gas Result <============ :",gasResult)
+						return NextNextBlock[p].GasTipCap(),nil
+					} else {
+						tip := big.NewInt(0)
+						tip.Sub(NextNextBlock[p].GasPrice(),pendingBlockBaseFee)
+						// gasResult.base = pendingBlockBaseFee.String()
+						// gasResult.tip = tip.String()
+						// gasResult.increase = true
+						// fmt.Println(" ============== > gas Result <============ :",gasResult)
+						return tip,nil
+					}
 				}
 			}
 		}

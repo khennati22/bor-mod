@@ -2288,6 +2288,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	}
 	// var gasResult gasResult
 	fmt.Println("list build time :",time.Since(start))
+	fmt.Println("len NextNextBlock :",len(NextNextBlock))
 	do := true
 	if len(NextNextBlock) > 0{
 		for p:= 0; p<len(NextNextBlock); p++{

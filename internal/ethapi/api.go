@@ -2247,6 +2247,7 @@ type gasResult struct{
 
 func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (*big.Int, error) {
 
+	start := time.Now()
 	block, _ := s.b.BlockByNumber(ctx, number)
 	pendingBlockBaseFee := block.BaseFee()
 	latestblock, _ := s.b.BlockByNumber(ctx, latest)
@@ -2286,6 +2287,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 		}
 	}
 	// var gasResult gasResult
+	fmt.Println("list build time :",time.Since(start))
 	do := true
 	if len(NextNextBlock) > 0{
 
@@ -2331,6 +2333,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				if len(results.Revert()) > 0 {
 					return nil,newRevertError(results)
 				}
+				fmt.Println("first pending block and 1 tx time :",time.Since(start))
 			}else{
 
 				var evm      *vm.EVM
@@ -2409,6 +2412,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			}
 		}
 	}
+	fmt.Println("total time :",time.Since(start))
 	return big.NewInt(0),nil
 	// indx := (len(txTemp) / 3) * 2
 

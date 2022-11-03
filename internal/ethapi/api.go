@@ -2691,12 +2691,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
 	}
 
-	demoArgs := TransactionArgs{
-		From:  args.From,
-		To:    args.To,
-	}
-	evm, gasGp, header, stateOrg := DoCallForAllTest(ctx, s.b, demoArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-
+	
 	txs := block.Transactions()
 
 	for idx, tx := range txs {
@@ -2713,7 +2708,7 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 
 			}
 		}
-
+	
 		txN := formatTx(tx)
 		callArgs := TransactionArgs{
 			From:  &txN.From,
@@ -2721,9 +2716,8 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 			Value: txN.Value,
 			Data:  &txN.Input,
 		}
-		principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-		core.ApplyMessage(evm, principalMsg, gasGp)
-
+		evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+		
 		similateMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 		results, err := core.ApplyMessage(evm, similateMsg, gasGp)
 		if err != nil || len(results.Revert()) > 0{
@@ -2735,9 +2729,9 @@ func (s *PublicBlockChainAPI) CallWithPendingBlock1Args(ctx context.Context, arg
 				return tx.GasPrice()
 			}
 		}
-		fmt.Println(" the modified version evm is: ", evm)
-		evm.Reset(evm.TxContext, stateOrg)
-		fmt.Println(" the reset version evm is: ", evm)
+		// fmt.Println(" the modified version evm is: ", evm)
+		// evm.Reset(evm.TxContext, stateOrg)
+		// fmt.Println(" the reset version evm is: ", evm)
 	
 	}
 

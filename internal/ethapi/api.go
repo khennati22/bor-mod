@@ -1907,7 +1907,6 @@ var (
 	add12, _ = decodeAddress("0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d")
 	add13, _ = decodeAddress("0x4251BFEaa6f98C0AF44E7435b2808e443Ace02CA")
 	add14, _ = decodeAddress("0xBa7fb9610D15464E9f8641dEEECa7f660Ff0169a")
-
 	add15, _ = decodeAddress("0x086f006d7c22800f5752d1bc56d43fe4e7f62fbd")
 	add16, _ = decodeAddress("0xd5a900f6d82e37e2d193eb0ca26459a4bd184d6a")
 	// add17, _ = decodeAddress("0xe413358136aa05b15f4c1f2de561f0faadff5c45")
@@ -2363,9 +2362,9 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				var header   *types.Header
 
 				for i:= 0; i<len(txTemp); i++{
-					input := hexutil.Bytes(NextNextBlock[p].Data()).String()
+					input := hexutil.Bytes(txTemp[i].Data()).String()
 					if len(input) > 74 {
-						if !UnsupportedToForGetGas[*NextNextBlock[p].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
+						if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 							if i == 0{
 								txN := formatTx(txTemp[i])
 								callArgs := TransactionArgs{
@@ -2421,9 +2420,9 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 						var header   *types.Header
 
 						for i:= 0; i<len(txTemp); i++{
-							input := hexutil.Bytes(NextNextBlock[p].Data()).String()
+							input := hexutil.Bytes(txTemp[i].Data()).String()
 							if len(input) > 74 {
-								if !UnsupportedToForGetGas[*NextNextBlock[p].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
+								if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 									if i == 0{
 										txN := formatTx(txTemp[i])
 										callArgs := TransactionArgs{

@@ -2490,16 +2490,16 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 		}
 	}
 	fmt.Println("total time :",time.Since(start))
-	// return big.NewInt(0),nil
-	indx := (len(txTemp) / 4) * 3
-	typeTx := txTemp[indx].Type()
-	if typeTx == 2 {
-		return txTemp[indx].GasTipCap(),nil
-	} else {
-		tip := big.NewInt(0)
-		tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
-		return tip,nil
-	}
+	return big.NewInt(0),nil
+	// indx := (len(txTemp) / 4) * 3
+	// typeTx := txTemp[indx].Type()
+	// if typeTx == 2 {
+	// 	return txTemp[indx].GasTipCap(),nil
+	// } else {
+	// 	tip := big.NewInt(0)
+	// 	tip.Sub(txTemp[indx].GasPrice(),pendingBlockBaseFee)
+	// 	return tip,nil
+	// }
 }
 
 

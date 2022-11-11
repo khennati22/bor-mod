@@ -2895,6 +2895,88 @@ func (s *PublicTransactionPoolAPI) GetRawTransactionByHash(ctx context.Context, 
 }
 
 // GetTransactionReceipt returns the transaction receipt for the given transaction hash.
+func (s *PublicTransactionPoolAPI) GetTransactionReceipt2(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, hash common.Hash, overrides *StateOverride) (map[string]interface{}, error) {
+	borTx := false
+
+	evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, args, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+	principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+	core.ApplyMessage(evm, principalMsg, gasGp)
+
+
+	tx, blockHash, blockNumber, index := rawdb.ReadTransaction(s.b.ChainDb(), hash)
+	if tx == nil {
+		tx, blockHash, blockNumber, index = rawdb.ReadBorTransaction(s.b.ChainDb(), hash)
+		borTx = true
+	}
+
+	if tx == nil {
+		return nil, nil
+	}
+
+	var receipt *types.Receipt
+
+	if borTx {
+		// Fetch bor block receipt
+		receipt = rawdb.ReadBorReceipt(s.b.ChainDb(), blockHash, blockNumber)
+	} else {
+		receipts, err := s.b.GetReceipts(ctx, blockHash)
+		if err != nil {
+			return nil, err
+		}
+		if len(receipts) <= int(index) {
+			return nil, nil
+		}
+		receipt = receipts[index]
+	}
+
+	// Derive the sender.
+	bigblock := new(big.Int).SetUint64(blockNumber)
+	signer := types.MakeSigner(s.b.ChainConfig(), bigblock)
+	from, _ := types.Sender(signer, tx)
+
+	fields := map[string]interface{}{
+		"blockHash":         blockHash,
+		"blockNumber":       hexutil.Uint64(blockNumber),
+		"transactionHash":   hash,
+		"transactionIndex":  hexutil.Uint64(index),
+		"from":              from,
+		"to":                tx.To(),
+		"gasUsed":           hexutil.Uint64(receipt.GasUsed),
+		"cumulativeGasUsed": hexutil.Uint64(receipt.CumulativeGasUsed),
+		"contractAddress":   nil,
+		"logs":              receipt.Logs,
+		"logsBloom":         receipt.Bloom,
+		"type":              hexutil.Uint(tx.Type()),
+	}
+	// Assign the effective gas price paid
+	if !s.b.ChainConfig().IsLondon(bigblock) {
+		fields["effectiveGasPrice"] = hexutil.Uint64(tx.GasPrice().Uint64())
+	} else {
+		header, err := s.b.HeaderByHash(ctx, blockHash)
+		if err != nil {
+			return nil, err
+		}
+		gasPrice := new(big.Int).Add(header.BaseFee, tx.EffectiveGasTipValue(header.BaseFee))
+		fields["effectiveGasPrice"] = hexutil.Uint64(gasPrice.Uint64())
+	}
+	// Assign receipt status or post state.
+	if len(receipt.PostState) > 0 {
+		fields["root"] = hexutil.Bytes(receipt.PostState)
+	} else {
+		fields["status"] = hexutil.Uint(receipt.Status)
+	}
+	if receipt.Logs == nil {
+		fields["logs"] = []*types.Log{}
+	}
+	// If the ContractAddress is 20 0x0 bytes, assume it is not a contract creation
+	if receipt.ContractAddress != (common.Address{}) {
+		fields["contractAddress"] = receipt.ContractAddress
+	}
+	return fields, nil
+}
+
+
+// GetTransactionReceipt returns the transaction receipt for the given transaction hash.
 func (s *PublicTransactionPoolAPI) GetTransactionReceipt(ctx context.Context, hash common.Hash) (map[string]interface{}, error) {
 	borTx := false
 

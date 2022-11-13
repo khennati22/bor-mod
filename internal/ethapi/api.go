@@ -2352,6 +2352,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	fmt.Println("len NextNextBlock :",len(NextNextBlock))
 	// do := true
 	if len(NextNextBlock) > 0{
+		fmt.Println("start loop")
 		for p:= 0; p<len(NextNextBlock); p++{
 			
 			// if (p == 0) && do {
@@ -2403,6 +2404,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			// 	fmt.Println("first pending block and 1 tx time :",time.Since(start))
 			// }else 
 			if p == 50{
+				fmt.Println("==================>  in p == 50")
 				typeTx := NextNextBlock[p].Type()
 				fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {
@@ -2414,12 +2416,15 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				}
 			}else{
 				input := hexutil.Bytes(NextNextBlock[p].Data()).String()
+
 				if len(input) > 74 {
+					fmt.Println("==================>  in len(input) > 74")
 					if !UnsupportedToForGetGas[*NextNextBlock[p].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 						var evm      *vm.EVM
 						var gasGp    *core.GasPool
 						var header   *types.Header
 
+						fmt.Println("==================>  start rebuild pending block")
 						for i:= 0; i<len(txTemp); i++{
 							input := hexutil.Bytes(txTemp[i].Data()).String()
 							if len(input) > 74 {
@@ -2450,7 +2455,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 								}
 							}
 						}
-
+						fmt.Println("==================>  start apply tx with pending block")
 						txN := formatTx(NextNextBlock[p])
 						callArgs := TransactionArgs{
 							From:  &txN.From,

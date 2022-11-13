@@ -2425,11 +2425,12 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 						var header   *types.Header
 
 						fmt.Println("==================>  start rebuild pending block")
+						first := true
 						for i:= 0; i<len(txTemp); i++{
 							input := hexutil.Bytes(txTemp[i].Data()).String()
 							if len(input) > 74 {
 								if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
-									if i == 0{
+									if first{
 										txN := formatTx(txTemp[i])
 										callArgs := TransactionArgs{
 											From:  &txN.From,
@@ -2440,7 +2441,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 										evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
 										principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
 										core.ApplyMessage(evm, principalMsg, gasGp)
-							
+										first = false
 									}else{
 										txN := formatTx(txTemp[i])
 										callArgs := TransactionArgs{

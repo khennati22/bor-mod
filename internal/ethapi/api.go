@@ -2350,58 +2350,59 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	// var gasResult gasResult
 	fmt.Println("list build time :",time.Since(start))
 	fmt.Println("len NextNextBlock :",len(NextNextBlock))
-	do := true
+	// do := true
 	if len(NextNextBlock) > 0{
 		for p:= 0; p<len(NextNextBlock); p++{
 			
-			if (p == 0) && do {
-				p = p - 1
-				do = false
-				var evm      *vm.EVM
-				var gasGp    *core.GasPool
-				var header   *types.Header
+			// if (p == 0) && do {
+			// 	p = p - 1
+			// 	do = false
+			// 	var evm      *vm.EVM
+			// 	var gasGp    *core.GasPool
+			// 	var header   *types.Header
 
-				for i:= 0; i<len(txTemp); i++{
-					input := hexutil.Bytes(txTemp[i].Data()).String()
-					if len(input) > 74 {
-						if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
-							if i == 0{
-								txN := formatTx(txTemp[i])
-								callArgs := TransactionArgs{
-									From:  &txN.From,
-									To:    txN.To,
-									Value: txN.Value,
-									Data:  &txN.Input,
-								}
-								evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-								principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-								core.ApplyMessage(evm, principalMsg, gasGp)
+			// 	for i:= 0; i<len(txTemp); i++{
+			// 		input := hexutil.Bytes(txTemp[i].Data()).String()
+			// 		if len(input) > 74 {
+			// 			if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
+			// 				if i == 0{
+			// 					txN := formatTx(txTemp[i])
+			// 					callArgs := TransactionArgs{
+			// 						From:  &txN.From,
+			// 						To:    txN.To,
+			// 						Value: txN.Value,
+			// 						Data:  &txN.Input,
+			// 					}
+			// 					evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+			// 					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			// 					core.ApplyMessage(evm, principalMsg, gasGp)
 					
-							}else{
-								txN := formatTx(txTemp[i])
-								callArgs := TransactionArgs{
-									From:  &txN.From,
-									To:    txN.To,
-									Value: txN.Value,
-									Data:  &txN.Input,
-								}
-								principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-								core.ApplyMessage(evm, principalMsg, gasGp)
-							}
-						}
-					}
-				}
+			// 				}else{
+			// 					txN := formatTx(txTemp[i])
+			// 					callArgs := TransactionArgs{
+			// 						From:  &txN.From,
+			// 						To:    txN.To,
+			// 						Value: txN.Value,
+			// 						Data:  &txN.Input,
+			// 					}
+			// 					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			// 					core.ApplyMessage(evm, principalMsg, gasGp)
+			// 				}
+			// 			}
+			// 		}
+			// 	}
 
-				principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-				results, err := core.ApplyMessage(evm, principalMsg, gasGp)
-				if err != nil{
-					return nil,err
-				}
-				if len(results.Revert()) > 0 {
-					return nil,newRevertError(results)
-				}
-				fmt.Println("first pending block and 1 tx time :",time.Since(start))
-			}else if p == 20{
+			// 	principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			// 	results, err := core.ApplyMessage(evm, principalMsg, gasGp)
+			// 	if err != nil{
+			// 		return nil,err
+			// 	}
+			// 	if len(results.Revert()) > 0 {
+			// 		return nil,newRevertError(results)
+			// 	}
+			// 	fmt.Println("first pending block and 1 tx time :",time.Since(start))
+			// }else 
+			if p == 50{
 				typeTx := NextNextBlock[p].Type()
 				fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {

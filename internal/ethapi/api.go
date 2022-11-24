@@ -2060,6 +2060,82 @@ func tree02FromPending(tx *RPCTransaction) int {
 }
 
 
+func (s *PublicBlockChainAPI) BlockSimilateLogs(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]*types.Log, error) {
+
+	block, _ := s.b.BlockByNumber(ctx, number)
+	latestblock, _ := s.b.BlockByNumber(ctx, latest)
+	lastBlockLen := len(latestblock.Transactions())
+	// latestblockNumber := latestblock.Number()
+	formatTx := func(tx *types.Transaction) *RPCTransaction {
+		return newRPCTransactionFromBlockHash(block, tx.Hash(), s.b.ChainConfig())
+	}
+
+	var (
+		evm	*vm.EVM
+		gasGp	*core.GasPool
+		header	*types.Header
+		state	*state.StateDB
+	)
+	
+	// var txTemp = make(map[*types.Transaction]bool)
+	var txTemp []*types.Transaction
+	txs := block.Transactions()
+	latestblockTime := latestblock.ReceivedAt.UnixMilli() // block time
+	// fmt.Println("latestblockNumber :", latestblockNumber)
+	for _, tx := range txs {
+		txTime := tx.GetTxTime().UnixMilli()
+		if txTime < latestblockTime{  // old tx than latest block, it should incloud in next block
+			// fmt.Println("tx In pending ======>", tx.Hash(), "txTime:", latestblockTime - txTime  )
+
+			txTemp = append(txTemp, tx)
+			if len(txTemp) == lastBlockLen{
+				break
+			}
+		}
+	}
+
+	for i:= 0; i<len(txTemp); i++{
+
+		if i == 0{
+			txN := formatTx(txTemp[i])
+			callArgs := TransactionArgs{
+				From:  &txN.From,
+				To:    txN.To,
+				Value: txN.Value,
+				Data:  &txN.Input,
+			}
+			evm, gasGp, header, state = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			core.ApplyMessage(evm, principalMsg, gasGp)
+
+		}else{
+
+			txN := formatTx(txTemp[i])
+			callArgs := TransactionArgs{
+				From:  &txN.From,
+				To:    txN.To,
+				Value: txN.Value,
+				Data:  &txN.Input,
+			}
+			principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+			core.ApplyMessage(evm, principalMsg, gasGp)
+			
+		}
+	}
+	// principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+	// results, err := core.ApplyMessage(evm, principalMsg, gasGp)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return nil, err
+	// }
+	// if len(results.Revert()) > 0 {
+	// 	return nil, newRevertError(results)
+	// }
+	return state.Logs(),nil
+}
+
+
+
 func (s *PublicBlockChainAPI) BlockSimilate(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) (hexutil.Bytes, error) {
 
 	block, _ := s.b.BlockByNumber(ctx, number)

@@ -2059,6 +2059,13 @@ func tree02FromPending(tx *RPCTransaction) int {
 
 }
 
+func (s *PublicBlockChainAPI) SimilateWithLogs(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) ([]*types.Log, error) {
+	_, _, _, state := DoCallForAllTest(ctx, s.b, args, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+	return state.Logs(),nil
+}
+
+
+
 
 func (s *PublicBlockChainAPI) BlockSimilateLogs(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]*types.Log, error) {
 

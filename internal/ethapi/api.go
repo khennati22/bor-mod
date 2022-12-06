@@ -2065,6 +2065,10 @@ func (s *PublicBlockChainAPI) SimilateWithLogs(ctx context.Context, args Transac
 }
 
 
+func (s *PublicBlockChainAPI) AllLogs(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) ([]*types.Log, error) {
+	state, _, _ := s.b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
+	return state.Logs(),nil
+}
 
 
 func (s *PublicBlockChainAPI) BlockSimilateLogs(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, number rpc.BlockNumber, latest rpc.BlockNumber, overrides *StateOverride) ([]*types.Log, error) {

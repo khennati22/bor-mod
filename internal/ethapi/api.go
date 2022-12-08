@@ -2070,7 +2070,7 @@ func (s *PublicBlockChainAPI) AllLogs(ctx context.Context, blockNrOrHash rpc.Blo
 	return state.Logs(),nil
 }
 
-func (s *PublicBlockChainAPI) Allstate(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) (*state.StateDB, error) {
+func (s *PublicBlockChainAPI) AllState(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) (*state.StateDB, error) {
 	state, _, _ := s.b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
 	return state,nil
 }

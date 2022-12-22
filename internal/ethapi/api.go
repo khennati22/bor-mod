@@ -2442,63 +2442,63 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 	// var gasResult gasResult
 	fmt.Println("list build time :",time.Since(start))
 	fmt.Println("len NextNextBlock :",len(NextNextBlock))
-	// do := true
+	do := true
 	if len(NextNextBlock) > 0{
 		fmt.Println("start loop")
 		for p:= 0; p<len(NextNextBlock); p++{
 			
-			// if (p == 0) && do {
-			// 	p = p - 1
-			// 	do = false
-			// 	var evm      *vm.EVM
-			// 	var gasGp    *core.GasPool
-			// 	var header   *types.Header
+			if (p == 0) && do {
+				p = p - 1
+				do = false
+				var evm      *vm.EVM
+				var gasGp    *core.GasPool
+				var header   *types.Header
 
-			// 	for i:= 0; i<len(txTemp); i++{
-			// 		input := hexutil.Bytes(txTemp[i].Data()).String()
-			// 		if len(input) > 74 {
-			// 			if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
-			// 				if i == 0{
-			// 					txN := formatTx(txTemp[i])
-			// 					callArgs := TransactionArgs{
-			// 						From:  &txN.From,
-			// 						To:    txN.To,
-			// 						Value: txN.Value,
-			// 						Data:  &txN.Input,
-			// 					}
-			// 					evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
-			// 					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			// 					core.ApplyMessage(evm, principalMsg, gasGp)
+				for i:= 0; i<len(txTemp); i++{
+					input := hexutil.Bytes(txTemp[i].Data()).String()
+					if len(input) > 74 {
+						if !UnsupportedToForGetGas[*txTemp[i].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
+							if i == 0{
+								txN := formatTx(txTemp[i])
+								callArgs := TransactionArgs{
+									From:  &txN.From,
+									To:    txN.To,
+									Value: txN.Value,
+									Data:  &txN.Input,
+								}
+								evm, gasGp, header, _ = DoCallForAllTest(ctx, s.b, callArgs, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+								principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+								core.ApplyMessage(evm, principalMsg, gasGp)
 					
-			// 				}else{
-			// 					txN := formatTx(txTemp[i])
-			// 					callArgs := TransactionArgs{
-			// 						From:  &txN.From,
-			// 						To:    txN.To,
-			// 						Value: txN.Value,
-			// 						Data:  &txN.Input,
-			// 					}
-			// 					principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			// 					core.ApplyMessage(evm, principalMsg, gasGp)
-			// 				}
-			// 			}
-			// 		}
-			// 	}
+							}else{
+								txN := formatTx(txTemp[i])
+								callArgs := TransactionArgs{
+									From:  &txN.From,
+									To:    txN.To,
+									Value: txN.Value,
+									Data:  &txN.Input,
+								}
+								principalMsg, _ := callArgs.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+								core.ApplyMessage(evm, principalMsg, gasGp)
+							}
+						}
+					}
+				}
 
-			// 	principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
-			// 	results, err := core.ApplyMessage(evm, principalMsg, gasGp)
-			// 	if err != nil{
-			// 		return nil,err
-			// 	}
-			// 	if len(results.Revert()) > 0 {
-			// 		return nil,newRevertError(results)
-			// 	}
-			// 	fmt.Println("first pending block and 1 tx time :",time.Since(start))
-			// }else 
+				principalMsg, _ := args.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+				results, err := core.ApplyMessage(evm, principalMsg, gasGp)
+				if err != nil{
+					return nil,err
+				}
+				if len(results.Revert()) > 0 {
+					return nil,newRevertError(results)
+				}
+				// fmt.Println("first pending block and 1 tx time :",time.Since(start))
+			}else 
 			if p == 50{
-				fmt.Println("==================>  in p == 50")
+				// fmt.Println("==================>  in p == 50")
 				typeTx := NextNextBlock[p].Type()
-				fmt.Println("==================>",NextNextBlock[p].Hash())
+				// fmt.Println("==================>",NextNextBlock[p].Hash())
 				if typeTx == 2 {
 					return NextNextBlock[p].GasTipCap(),nil
 				} else {
@@ -2510,13 +2510,13 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 				input := hexutil.Bytes(NextNextBlock[p].Data()).String()
 
 				if len(input) > 74 {
-					fmt.Println("==================>  in len(input) > 74")
+					// fmt.Println("==================>  in len(input) > 74")
 					if !UnsupportedToForGetGas[*NextNextBlock[p].To()] && !UnsupportedMethodForGetGas[input[0:10]]{
 						var evm      *vm.EVM
 						var gasGp    *core.GasPool
 						var header   *types.Header
 
-						fmt.Println("==================>  start rebuild pending block")
+						// fmt.Println("==================>  start rebuild pending block")
 						first := true
 						for i:= 0; i<len(txTemp); i++{
 							input := hexutil.Bytes(txTemp[i].Data()).String()
@@ -2548,7 +2548,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 								}
 							}
 						}
-						fmt.Println("==================>  start apply tx with pending block")
+						// fmt.Println("==================>  start apply tx with pending block")
 						txN := formatTx(NextNextBlock[p])
 						callArgs := TransactionArgs{
 							From:  &txN.From,
@@ -2568,9 +2568,9 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 						results, _ := core.ApplyMessage(evm, similateTx, gasGp)
 						if len(results.Revert()) > 0 {
 							if *NextNextBlock[p].To() != untrgetContract{
-								fmt.Println("================len(results.Revert()) > 0 ===>")
+								// fmt.Println("================len(results.Revert()) > 0 ===>")
 								typeTx := NextNextBlock[p].Type()
-								fmt.Println("==================>",NextNextBlock[p].Hash())
+								// fmt.Println("==================>",NextNextBlock[p].Hash())
 								if typeTx == 2 {
 									return NextNextBlock[p].GasTipCap(),nil
 								} else {
@@ -2588,7 +2588,7 @@ func (s *PublicBlockChainAPI) TransactionSimilate(ctx context.Context, args Tran
 			}
 		}
 	}
-	fmt.Println("total time :",time.Since(start))
+	// fmt.Println("total time :",time.Since(start))
 	return big.NewInt(0),nil
 	// indx := (len(txTemp) / 4) * 3
 	// typeTx := txTemp[indx].Type()

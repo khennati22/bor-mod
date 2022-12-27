@@ -3486,3 +3486,17 @@ func toHexSlice(b [][]byte) []string {
 	}
 	return r
 }
+
+func (s *PublicBlockChainAPI) SimilateWithTx(ctx context.Context, args, args2 TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) (hexutil.Bytes, error) {
+	evm, gasGp, header, _ := DoCallForAllTest(ctx, s.b, args, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+	principalMsg, _ := args2.ToMessage(s.b.RPCGasCap(), header.BaseFee)
+	results, err := core.ApplyMessage(evm, principalMsg, gasGp)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	if len(results.Revert()) > 0 {
+		return nil, newRevertError(results)
+	}
+	return results.Return(), results.Err
+}
